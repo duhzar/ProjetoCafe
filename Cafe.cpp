@@ -8,7 +8,7 @@
 using namespace std;
 
 // Definindo a estrutura
-struct Participante {
+struct Aluno {
     int id;
     string nome;
     int semestre;
@@ -17,15 +17,15 @@ struct Participante {
 };
 
 // Vetor para armazenar os participantes
-vector<Participante> turmaDoCafe;
+vector<Aluno> turmaDoCafe;
 
 // Função para novos participantes
-void novoParticipante(int id, string nome, int semestre, int anoIngresso, string curso) {
-    Participante novoParticipante = {id, nome, semestre, anoIngresso, curso};
-    turmaDoCafe.push_back(novoParticipante);
+void novoAluno(int id, string nome, int semestre, int anoIngresso, string curso) {
+    Aluno novoAluno = {id, nome, semestre, anoIngresso, curso};
+    turmaDoCafe.push_back(novoAluno);
 }
 //Função para achar Participantes
-int encontrarParticipante(int id) {
+int encontrarAluno(int id) {
     for (int i = 0; i < turmaDoCafe.size(); i++) {
         if (turmaDoCafe[i].id == id) {
             return i;
@@ -34,7 +34,7 @@ int encontrarParticipante(int id) {
     return -1;
 }
 // Função para salvar os dados dos participantes em um arquivo
-void salvarParticipantes() {
+void salvarAluno() {
     ofstream arquivo("participantes.txt");
     if (arquivo.is_open()) {
         for (auto& participante : turmaDoCafe) {
@@ -45,6 +45,7 @@ void salvarParticipantes() {
                     << participante.curso << "\n";
         }
         arquivo.close();
+        cout << "Dados salvos com sucesso.\n";
     } else {
         cout << "Não foi possível abrir o arquivo participantes.txt\n";
     }
@@ -56,16 +57,17 @@ void lerArquivo() {
         int id, semestre, anoIngresso;
         string nome, curso;
         while (arquivo >> id >> nome >> semestre >> anoIngresso >> curso) {
-            novoParticipante(id, nome, semestre, anoIngresso, curso);
+            novoAluno(id, nome, semestre, anoIngresso, curso);
         }
         arquivo.close();
+        cout << "Dados carregados com sucesso.\n";
     } else {
-        cout << "Nao foi possivel abrir o arquivo participantes.txt\n";
+        cout << "Não foi possível abrir o arquivo participantes.txt\n";
     }
 }
 // Função para editar um participante
 void editarParticipante(int id) {
-    int index = encontrarParticipante(id);
+    int index = encontrarAluno(id);
     if (index != -1) {
         string nome, curso;
         int semestre, anoIngresso;
@@ -90,12 +92,13 @@ int main() {
     setlocale(LC_ALL, "pt-BR.UTF-8");
     // Menu principal
     int opcao = 0;
-    while(opcao != 5) {
+    while(opcao != 6) {
         cout << "1. Inserir novo participante\n";
         cout << "2. Listar participantes\n";
         cout << "3. Editar participante\n";
         cout << "4. Ler participantes de arquivo\n";
-        cout << "5. Sair\n";
+        cout << "5. Salvar todos os participantes\n";
+        cout << "6. Sair\n";
         cout << "Escolha uma opcao: ";
         cin >> opcao;
 
@@ -114,8 +117,8 @@ int main() {
             cin >> anoIngresso;
             cout << "Digite o curso (DSM, SI, GE): ";
             cin >> curso;
-            novoParticipante(id, nome, semestre, anoIngresso, curso);
-            salvarParticipantes();
+            novoAluno(id, nome, semestre, anoIngresso, curso);
+            salvarAluno();
         } else if(opcao == 2) {
             system("cls"); 
             for(auto& participante : turmaDoCafe) {
@@ -129,6 +132,8 @@ int main() {
             editarParticipante(id);
         } else if (opcao == 4){
             lerArquivo();
+        } else if (opcao == 5){
+            salvarAluno();
         }
     }
 
