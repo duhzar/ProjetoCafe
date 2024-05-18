@@ -118,7 +118,6 @@ int main() {
             cout << "Digite o curso (DSM, SI, GE): ";
             cin >> curso;
             novoAluno(id, nome, semestre, anoIngresso, curso);
-            salvarAluno();
         } else if(opcao == 2) {
             system("cls"); 
             for(auto& participante : turmaDoCafe) {
