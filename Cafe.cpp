@@ -1,9 +1,9 @@
 #include <iostream>
 #include <fstream>
-#include <vector>
+#include <list>
 #include <string>
-#include<locale.h>
-#include<stdlib.h>
+#include <locale.h>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -16,26 +16,28 @@ struct Aluno {
     string curso;
 };
 
-// Vetor para armazenar os participantes
-vector<Aluno> turmaDoCafe;
+// Lista para armazenar os participantes
+list<Aluno> turmaDoCafe;
 
-// Fun√ß√£o para novos participantes
+// FunÁ„o para novos participantes
 void novoAluno(int id, string nome, int semestre, int anoIngresso, string curso) {
     Aluno novoAluno = {id, nome, semestre, anoIngresso, curso};
     turmaDoCafe.push_back(novoAluno);
 }
-//Fun√ß√£o para achar Participantes
-int encontrarAluno(int id) {
-    for (int i = 0; i < turmaDoCafe.size(); i++) {
-        if (turmaDoCafe[i].id == id) {
-            return i;
+
+// FunÁ„o para achar Participantes
+list<Aluno>::iterator encontrarAluno(int id) {
+    for (auto it = turmaDoCafe.begin(); it != turmaDoCafe.end(); ++it) {
+        if (it->id == id) {
+            return it;
         }
     }
-    return -1;
+    return turmaDoCafe.end();
 }
-// Fun√ß√£o para salvar os dados dos participantes em um arquivo
+
+// FunÁ„o para salvar os dados dos participantes em um arquivo
 void salvarAluno() {
-    ofstream arquivo("participantes.txt");
+    ofstream arquivo("Lista.txt");
     if (arquivo.is_open()) {
         for (auto& participante : turmaDoCafe) {
             arquivo << participante.id << " "
@@ -47,12 +49,13 @@ void salvarAluno() {
         arquivo.close();
         cout << "Dados salvos com sucesso.\n";
     } else {
-        cout << "N√£o foi poss√≠vel abrir o arquivo participantes.txt\n";
+        cout << "N„o foi possÌvel abrir o arquivo Lista.txt\n";
     }
 }
-//Fun√ß√£o para ler arquivo .txt
+
+// FunÁ„o para ler arquivo .txt
 void lerArquivo() {
-    ifstream arquivo("participantes.txt");
+    ifstream arquivo("Lista.txt");
     if (arquivo.is_open()) {
         int id, semestre, anoIngresso;
         string nome, curso;
@@ -62,13 +65,14 @@ void lerArquivo() {
         arquivo.close();
         cout << "Dados carregados com sucesso.\n";
     } else {
-        cout << "N√£o foi poss√≠vel abrir o arquivo participantes.txt\n";
+        cout << "N„o foi possÌvel abrir o arquivo Lista.txt\n";
     }
 }
-// Fun√ß√£o para editar um participante
+
+// FunÁ„o para editar um participante
 void editarParticipante(int id) {
-    int index = encontrarAluno(id);
-    if (index != -1) {
+    auto it = encontrarAluno(id);
+    if (it != turmaDoCafe.end()) {
         string nome, curso;
         int semestre, anoIngresso;
         cout << "Digite o novo nome: ";
@@ -79,12 +83,12 @@ void editarParticipante(int id) {
         cin >> anoIngresso;
         cout << "Digite o novo curso (DSM, SI, GE): ";
         cin >> curso;
-        turmaDoCafe[index].nome = nome;
-        turmaDoCafe[index].semestre = semestre;
-        turmaDoCafe[index].anoIngresso = anoIngresso;
-        turmaDoCafe[index].curso = curso;
+        it->nome = nome;
+        it->semestre = semestre;
+        it->anoIngresso = anoIngresso;
+        it->curso = curso;
     } else {
-        cout << "Participante n√£o encontrado.\n";
+        cout << "Participante n„o encontrado.\n";
     }
 }
 
@@ -102,9 +106,8 @@ int main() {
         cout << "Escolha uma opcao: ";
         cin >> opcao;
 
-
         if(opcao == 1) {
-            system("cls"); 
+            system("cls");
             int id, semestre, anoIngresso;
             string nome, curso;
             cout << "Digite o ID: ";
@@ -119,7 +122,7 @@ int main() {
             cin >> curso;
             novoAluno(id, nome, semestre, anoIngresso, curso);
         } else if(opcao == 2) {
-            system("cls"); 
+            system("cls");
             for(auto& participante : turmaDoCafe) {
                 cout << "ID: " << participante.id << ", Nome: " << participante.nome << ", Semestre: " << participante.semestre << ", Ano de Ingresso: " << participante.anoIngresso << ", Curso: " << participante.curso << "\n"<< endl;
             }
@@ -130,6 +133,7 @@ int main() {
             cin >>id;
             editarParticipante(id);
         } else if (opcao == 4){
+            system("cls");
             lerArquivo();
         } else if (opcao == 5){
             salvarAluno();
