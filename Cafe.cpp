@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <list>
 #include <string>
 #include <locale.h>
 #include <stdlib.h>
@@ -14,65 +13,76 @@ struct Aluno {
     int semestre;
     int anoIngresso;
     string curso;
+    Aluno* next;
 };
 
-// Lista para armazenar os participantes
-list<Aluno> turmaDoCafe;
+// Ponteiro para o primeiro elemento da lista
+Aluno* turmaDoCafe = nullptr;
 
-// Função para novos participantes
+// FunÃ§Ã£o para novos participantes
 void novoAluno(int id, string nome, int semestre, int anoIngresso, string curso) {
-    Aluno novoAluno = {id, nome, semestre, anoIngresso, curso};
-    turmaDoCafe.push_back(novoAluno);
+    Aluno* novoAluno = new Aluno {id, nome, semestre, anoIngresso, curso,nullptr};
+  if(turmaDoCafe == nullptr){
+    turmaDoCafe = novoAluno;
+  }else{
+      Aluno* temp = turmaDoCafe;
+      while (temp->next !=nullptr){
+        temp = temp-> next;
+      }
+      temp -> next = novoAluno;
+  }
 }
 
-// Função para achar Participantes
-list<Aluno>::iterator encontrarAluno(int id) {
-    for (auto it = turmaDoCafe.begin(); it != turmaDoCafe.end(); ++it) {
-        if (it->id == id) {
-            return it;
+// FunÃ§Ã£o para achar Participantes
+Aluno* encontrarAluno(int id){
+    Aluno* temp = turmaDoCafe;
+    while (temp != nullptr){
+        if(temp->id == id){
+            return temp;
         }
+        temp =temp->next;
     }
-    return turmaDoCafe.end();
+    return nullptr;
 }
 
-// Função para salvar os dados dos participantes em um arquivo
+// FunÃ§Ã£o para salvar os dados dos participantes em um arquivo
 void salvarAluno() {
     ofstream arquivo("Lista.txt");
     if (arquivo.is_open()) {
-        for (auto& participante : turmaDoCafe) {
-            arquivo << participante.id << " "
-                    << participante.nome << " "
-                    << participante.semestre << " "
-                    << participante.anoIngresso << " "
-                    << participante.curso << "\n";
-        }
+       Aluno* temp = turmaDoCafe;
+       while (temp != nullptr){
+        arquivo <<temp->id<<" "
+                <<temp->nome<<" "
+                <<temp->semestre<<" "
+                <<temp->anoIngresso<<" "
+                <<temp->curso<<"\n";
+        temp = temp->next;
+       }
         arquivo.close();
         cout << "Dados salvos com sucesso.\n";
     } else {
-        cout << "Não foi possível abrir o arquivo Lista.txt\n";
+        cout << "Nao foi possovel abrir o arquivo Lista.txt\n";
     }
 }
 
-// Função para ler arquivo .txt
+// Funï¿½ï¿½o para ler arquivo .txt
 void lerArquivo() {
-    ifstream arquivo("Lista.txt");
-    if (arquivo.is_open()) {
-        int id, semestre, anoIngresso;
-        string nome, curso;
+    ifstream arquivo;
+    arquivo.open("Lista.txt", ios::in); // abre o arquivo para leitura
+     if (! arquivo){ cout << "Arquivo Lista.txt nao pode ser aberto" << endl;
+}else {
+    int id, semestre, anoIngresso;
+    string nome, curso;
         while (arquivo >> id >> nome >> semestre >> anoIngresso >> curso) {
             novoAluno(id, nome, semestre, anoIngresso, curso);
         }
-        arquivo.close();
-        cout << "Dados carregados com sucesso.\n";
-    } else {
-        cout << "Não foi possível abrir o arquivo Lista.txt\n";
-    }
+}
 }
 
-// Função para editar um participante
+// Funï¿½ï¿½o para editar um participante
 void editarParticipante(int id) {
-    auto it = encontrarAluno(id);
-    if (it != turmaDoCafe.end()) {
+    Aluno* aluno = encontrarAluno(id);
+    if(aluno != nullptr) {
         string nome, curso;
         int semestre, anoIngresso;
         cout << "Digite o novo nome: ";
@@ -83,12 +93,23 @@ void editarParticipante(int id) {
         cin >> anoIngresso;
         cout << "Digite o novo curso (DSM, SI, GE): ";
         cin >> curso;
-        it->nome = nome;
-        it->semestre = semestre;
-        it->anoIngresso = anoIngresso;
-        it->curso = curso;
+        aluno->nome = nome;
+        aluno->semestre = semestre;
+        aluno->anoIngresso = anoIngresso;
+        aluno->curso = curso;
     } else {
-        cout << "Participante não encontrado.\n";
+        cout << "Participante nao encontrado.\n";
+    }
+}
+//FunÃ§Ã£o para listar participantes
+void listarParticipantes(){
+    Aluno* temp = turmaDoCafe;
+    while (temp != nullptr){
+        cout << "ID: "<< temp->id << ",Nome: "<< temp->nome
+             << ", Semestre: "<< temp->semestre
+             << ", Ano de Ingresso: "<< temp->anoIngresso
+             << ", Curso: "<<temp->curso <<"\n"<< endl;
+        temp = temp->next;
     }
 }
 
@@ -123,9 +144,7 @@ int main() {
             novoAluno(id, nome, semestre, anoIngresso, curso);
         } else if(opcao == 2) {
             system("cls");
-            for(auto& participante : turmaDoCafe) {
-                cout << "ID: " << participante.id << ", Nome: " << participante.nome << ", Semestre: " << participante.semestre << ", Ano de Ingresso: " << participante.anoIngresso << ", Curso: " << participante.curso << "\n"<< endl;
-            }
+           listarParticipantes();
         } else if(opcao == 3){
             system("cls");
             int id;
@@ -136,6 +155,7 @@ int main() {
             system("cls");
             lerArquivo();
         } else if (opcao == 5){
+            system("cls");
             salvarAluno();
         }
     }
